@@ -1,0 +1,106 @@
+/* PS4 WebKit Jailbreak - ultra-light flat UI (no animations, no gradients) */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #0b0e17;
+    color: #e8ecf4;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 40px 10px;
+}
+
+.card {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    background-color: #131826;
+    border: 1px solid #232b40;
+    border-radius: 20px;
+}
+
+.logo {
+    width: 150px;
+    height: 150px;
+    border-radius: 22px;
+}
+
+.eyebrow {
+    margin-top: 18px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #ff8c1a;
+}
+
+.title {
+    margin-top: 8px;
+    font-size: 36px;
+    color: #e8ecf4;
+}
+
+.subtitle {
+    margin-top: 8px;
+    font-size: 15px;
+    color: #8b93a7;
+}
+
+.fw-badge {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 6px 20px;
+    font-size: 14px;
+    color: #9fb4ff;
+    background-color: #18203a;
+    border: 1px solid #2c3a6e;
+    border-radius: 12px;
+}
+
+/* ---------- progress bar (static, JS-driven only) ---------- */
+
+.progress-wrap {
+    margin: 22px auto 0;
+    width: 88%;
+}
+
+.progress-info {
+    font-size: 14px;
+    color: #8b93a7;
+    margin-bottom: 10px;
+}
+
+#progress-pct {
+    color: #e8ecf4;
+}
+
+.progress-track {
+    height: 22px;
+    background-color: #1c2333;
+    border: 1px solid #262f47;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background-color: #4f6bff;
+}
+
+.progress-fill.success {
+    background-color: #22c96d;
+}
+
+.progress-fill.error {
+    background-color: #e05252;
+}
+
+/* ---------- status text ---------- */
+
+#msgs {
+    margin-top: 22px;
+    font-size: 22px;
+    color: #cdd5e6;
+}

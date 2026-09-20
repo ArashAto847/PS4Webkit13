@@ -1,24 +1,11 @@
-<!-- © 2026 mansoor0x — PS4 Exploit -->
+<!-- © 2026 PS Torghabeh — PS4 Exploit -->
+<!DOCTYPE html>
 <html manifest="cache.appcache">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>mansoor0x</title>
-    <style>
-        body {
-            background: #ffffff;
-            color: #111111;
-            font: 15px/1.5 monospace;
-            margin: 20px;
-        }
-        #console {
-            font-family: monospace;
-            white-space: pre;
-        }
-        .ok   { color: #1a7a1a; }
-        .bad  { color: #cc0000; }
-        .warn { color: #aa6600; }
-    </style>
+    <title>PS Torghabeh</title>
+    <link rel="stylesheet" href="style.css">
     <script>
     if (window.applicationCache && window.applicationCache.status == 0) {
         window.location.replace("cache.html");
@@ -26,21 +13,26 @@
     </script>
 </head>
 <body>
-    mansoor0x · PS4 Exploit<br>
-    © 2026 mansoor0x<br>
-    <br>
-    <pre id="console"></pre>
-</body>
+<main class="card">
+    <img class="logo" src="logo.png" alt="GoldHEN">
+    <div class="eyebrow">PS Torghabeh</div>
+    <h1 class="title">PS4 WebKit Jailbreak</h1>
+    <div class="subtitle">FIRMWARE 13.02 &mdash; 13.52</div>
+    <div class="fw-badge" id="fwbadge">GOLDHEN v2.4b18.11</div>
+    <div class="progress-wrap" id="progress-wrap">
+        <div class="progress-info">
+            <span id="progress-label">Initializing...</span>
+            <span id="progress-pct"></span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+    <h1 id="msgs">Loading GoldHEN v2.4b18.11... Please Wait</h1>
+</main>
 <script>
 (function () {
-    var con = document.getElementById("console");
-
-    function print(msg, cls) {
-        var span = document.createElement("span");
-        if (cls) span.className = cls;
-        span.textContent = msg + "\n";
-        con.appendChild(span);
-    }
+    function $(id) { return document.getElementById(id); }
 
     var params = new URLSearchParams(location.search);
 
@@ -56,21 +48,30 @@
         fwnum = parseInt(m[1], 10) * 100 + parseInt(ms, 10);
     }
 
+    var ua = navigator.userAgent.match(/PlayStation 4[ \/]([\d.]+)/i);
+    if (ua) {
+        $("fwbadge").innerHTML = "FW " + ua[1] + " &middot; GOLDHEN v2.4b18.11";
+    }
+
     var forced    = params.get("force") === "1";
     var supported = forced || (fwnum !== null && SUPPORTED[fwnum] === 1);
 
-    print("firmware: " + (key || "unknown"));
-    print("supported: " + (supported ? "yes" : "no"), supported ? "ok" : "bad");
+    var pct = 0;
+    var fill = $("progress-fill");
+    var num  = $("progress-pct");
+    var label = $("progress-label");
+    var stopped = false;
 
     var target = "jb.html" + location.search;
 
     function go() {
-        print("loading exploit...", "warn");
+        $("msgs").innerHTML = "Loading exploit...";
+        label.innerHTML = "Launching exploit...";
         location.replace(target);
     }
 
     function waitForTap(msg, action) {
-        print(msg, "warn");
+        $("msgs").innerHTML = msg;
         function fire() {
             window.removeEventListener("click",   fire);
             window.removeEventListener("keydown", fire);
@@ -81,55 +82,107 @@
     }
 
     if (!supported) {
-        print("UNSUPPORTED FIRMWARE — tap / press X to run anyway", "bad");
-        waitForTap("", go);
+        fill.className = "progress-fill error";
+        fill.style.width = "100%";
+        num.innerHTML = "";
+        label.innerHTML = "Error";
+        $("msgs").innerHTML = 'Unsupported Firmware: <span style="color: red;">' + (key || "unknown") + '</span>';
+        waitForTap("Tap / press X to run anyway", go);
         return;
     }
+
+    var timer = setInterval(function () {
+        if (stopped) { clearInterval(timer); return; }
+        if (pct < 90) {
+            pct += 3;
+            fill.style.width = pct + "%";
+            num.innerHTML = pct + "%";
+        }
+    }, 400);
 
     var ac = window.applicationCache;
     if (!ac || !document.documentElement.hasAttribute("manifest")) {
         go();
     } else if (!navigator.onLine) {
-        print("offline — running from cache", "ok");
+        stopped = true;
+        fill.className = "progress-fill success";
+        fill.style.width = "100%";
+        num.innerHTML = "100%";
+        label.innerHTML = "Offline — running from cache";
+        $("msgs").innerHTML = "Running from cache...";
         go();
     } else if (ac.status === ac.IDLE) {
-        print("cached", "ok");
+        stopped = true;
+        fill.className = "progress-fill success";
+        fill.style.width = "100%";
+        num.innerHTML = "100%";
+        label.innerHTML = "Done!";
         go();
     } else if (ac.status === ac.UPDATEREADY) {
         try { ac.swapCache(); } catch (e) {}
-        print("update downloaded", "ok");
+        stopped = true;
+        fill.className = "progress-fill success";
+        fill.style.width = "100%";
+        num.innerHTML = "100%";
+        label.innerHTML = "Update ready";
         waitForTap("UPDATE READY — tap / press X to reload", function () { location.reload(); });
     } else {
-        print("checking cache...");
-        ac.addEventListener("downloading",
-            function () { print("caching for offline (first run)..."); }, false);
+        label.innerHTML = "Checking cache...";
+        ac.addEventListener("downloading", function () {
+            label.innerHTML = "Caching for offline (first run)...";
+        }, false);
         ac.addEventListener("progress", function (e) {
-            if (e && e.total)
-                print("caching " + Math.round((e.loaded / e.total) * 100) + "%");
+            if (e && e.total) {
+                var p = Math.round((e.loaded / e.total) * 100);
+                fill.style.width = p + "%";
+                num.innerHTML = p + "%";
+                label.innerHTML = "Installing Offline Cache: " + p + "%";
+            }
         }, false);
         ac.addEventListener("cached", function () {
-            print("cached for offline use", "ok");
+            stopped = true;
+            fill.className = "progress-fill success";
+            fill.style.width = "100%";
+            num.innerHTML = "100%";
+            label.innerHTML = "Cache installation complete!";
+            $("msgs").innerHTML = "Cache Installed Successfully &#10004;";
             waitForTap("CACHED — tap / press X to run", go);
         }, false);
         ac.addEventListener("updateready", function () {
             try { ac.swapCache(); } catch (e) {}
-            print("update downloaded", "ok");
-            waitForTap("UPDATE READY — tap / press X to reload",
-                       function () { location.reload(); });
+            stopped = true;
+            fill.className = "progress-fill success";
+            fill.style.width = "100%";
+            num.innerHTML = "100%";
+            label.innerHTML = "Update ready";
+            waitForTap("UPDATE READY — tap / press X to reload", function () { location.reload(); });
         }, false);
         ac.addEventListener("noupdate", function () {
-            print("cached — offline ready", "ok");
+            stopped = true;
+            fill.className = "progress-fill success";
+            fill.style.width = "100%";
+            num.innerHTML = "100%";
+            label.innerHTML = "Done!";
             go();
         }, false);
         ac.addEventListener("error", function () {
-            print("cache unavailable");
-            waitForTap("CACHE FAILED — tap / press X to run anyway", go);
+            stopped = true;
+            fill.className = "progress-fill error";
+            fill.style.width = "100%";
+            num.innerHTML = "";
+            label.innerHTML = "Error";
+            $("msgs").innerHTML = "Error Installing Cache! - Clear and Re-Open Your Browser ...";
         }, false);
         ac.addEventListener("obsolete", function () {
-            print("cache obsolete");
+            stopped = true;
+            fill.className = "progress-fill error";
+            fill.style.width = "100%";
+            num.innerHTML = "";
+            label.innerHTML = "Error";
             waitForTap("CACHE OBSOLETE — tap / press X to run", go);
         }, false);
     }
 })();
 </script>
+</body>
 </html>

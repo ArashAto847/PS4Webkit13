@@ -1,149 +1,111 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" manifest="cache.appcache">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>RAW GAME x MANSOOR0X</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>PS Torghabeh</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        min-height: 100%;
-        background: #0b0d10;
-        color: #c8ced8;
-        font:
-          15px/1.45 "Segoe UI",
-          system-ui,
-          sans-serif;
-      }
-      #brand {
-        text-align: center;
-        padding: 8px 10px;
-        background: #0e1116;
-        border-bottom: 1px solid #1e2732;
-      }
-      #brand img {
-        width: 28px;
-        height: 28px;
-        margin-right: 8px;
-        border-radius: 50%;
-        vertical-align: middle;
-      }
-      #brand b {
-        font-size: 15px;
-        font-weight: 700;
-        letter-spacing: 0.14em;
-        color: #e6ebf2;
-        vertical-align: middle;
-      }
-
-      /* running: a spinner under the brand. jb.js sets body.done / body.fail / body.log. */
-      #spin {
-        position: fixed;
-        top: calc(50% + 20px);
-        left: 50%;
-        width: 46px;
-        height: 46px;
-        margin: -23px 0 0 -23px;
-        border: 4px solid #1e2732;
-        border-top-color: #7fd0a0;
-        border-radius: 50%;
-        animation: spin 0.9s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
+        /* ?log=1 — full step log */
+        #wrap {
+            display: none;
         }
-      }
-      #msg {
-        position: fixed;
-        top: 50%;
-        left: 0;
-        right: 0;
-        transform: translateY(-50%);
-        text-align: center;
-        font-size: 16px;
-        letter-spacing: 0.5px;
-        display: none;
-      }
-      #wrap {
-        padding: 0;
-      }
-      #state,
-      #out {
-        display: none;
-      }
-
-      body.done #spin {
-        display: none;
-      }
-      body.fail #spin {
-        display: none;
-      }
-      body.fail #msg {
-        display: block;
-      }
-
-      /* ?log=1 -- the full step log, styled like the landing. */
-      body.log #spin,
-      body.log #msg {
-        display: none;
-      }
-      body.log #wrap {
-        padding: 14px 18px;
-      }
-      body.log #state {
-        display: block;
-        font-size: 22px;
-        font-weight: 700;
-        margin: 0 0 8px;
-      }
-      body.log #out {
-        display: block;
-        white-space: pre-wrap;
-        font:
-          12px/1.45 Consolas,
-          monospace;
-        background: #11151b;
-        border: 1px solid #1e2732;
-        border-radius: 5px;
-        padding: 10px 12px;
-        height: calc(100vh - 141px);
-        overflow-y: auto;
-      }
-      .ok {
-        color: #7fd0a0;
-      }
-      .bad {
-        color: #d08a7f;
-      }
-      .warn {
-        color: #d8c07f;
-      }
-      .safe {
-        color: #7fd0a0;
-      }
-      .danger {
-        color: #d08a7f;
-      }
-      code {
-        color: #9fb3d0;
-      }
+        body.log #wrap {
+            display: block;
+            margin-top: 22px;
+            text-align: left;
+        }
+        body.log #progress-wrap {
+            display: none;
+        }
+        #state {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #e8ecf4;
+        }
+        #out {
+            white-space: pre-wrap;
+            font: 12px/1.45 Consolas, monospace;
+            background: #0b0e17;
+            border: 1px solid #232b40;
+            border-radius: 10px;
+            padding: 10px 12px;
+            height: calc(100vh - 340px);
+            overflow-y: auto;
+            color: #c8ced8;
+        }
+        .ok     { color: #22c96d; }
+        .bad    { color: #e05252; }
+        .warn   { color: #d8c07f; }
+        .safe   { color: #22c96d; }
+        .danger { color: #e05252; }
+        code    { color: #9fb4ff; }
     </style>
-  </head>
-  <body>
-    <div id="brand">
-      <b>RAW GAME X MANSOOR0X</b>
+</head>
+<body>
+<main class="card">
+    <img class="logo" src="logo.png" alt="GoldHEN">
+    <div class="eyebrow">PS Torghabeh</div>
+    <h1 class="title">PS4 WebKit Jailbreak</h1>
+    <div class="subtitle">FIRMWARE 13.02 &mdash; 13.52</div>
+    <div class="fw-badge" id="fwbadge">GOLDHEN v2.4b18.11</div>
+    <div class="progress-wrap" id="progress-wrap">
+        <div class="progress-info">
+            <span id="progress-label">Initializing...</span>
+            <span id="progress-pct"></span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
     </div>
-    <div id="spin"></div>
-    <div id="msg">Restart your console</div>
     <div id="wrap">
-      <div id="state"></div>
-      <div id="out"></div>
+        <div id="state"></div>
+        <div id="out"></div>
     </div>
-    <script type="module">
-      import "./jb.js?v=10";
-    </script>
-  </body>
+</main>
+<script>
+(function () {
+    var ua = navigator.userAgent.match(/PlayStation 4[ \/]([\d.]+)/i);
+    if (ua) {
+        document.getElementById("fwbadge").innerHTML = "FW " + ua[1] + " &middot; GOLDHEN v2.4b18.11";
+    }
+
+    var pct = 0;
+    var fill  = document.getElementById("progress-fill");
+    var num   = document.getElementById("progress-pct");
+    var label = document.getElementById("progress-label");
+
+    var timer = setInterval(function () {
+        var cls = document.body.className;
+
+        // Mirror whatever jb.js wrote into #state as the progress label
+        var stateEl = document.getElementById("state");
+        if (stateEl && stateEl.textContent) {
+            label.innerHTML = stateEl.textContent;
+        }
+
+        if (cls === "done") {
+            fill.className = "progress-fill success";
+            fill.style.width = "100%";
+            num.innerHTML = "100%";
+            label.innerHTML = "Done!";
+            clearInterval(timer);
+        } else if (cls === "fail") {
+            fill.className = "progress-fill error";
+            fill.style.width = "100%";
+            num.innerHTML = "";
+            clearInterval(timer);
+        } else if (cls !== "log" && pct < 90) {
+            pct += 3;
+            fill.style.width = pct + "%";
+            num.innerHTML = pct + "%";
+        }
+    }, 400);
+})();
+</script>
+<script type="module">
+    import "./jb.js?v=10";
+</script>
+</body>
 </html>

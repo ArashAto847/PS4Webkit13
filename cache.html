@@ -1,50 +1,62 @@
+<!DOCTYPE html>
 <html manifest="cache.appcache">
 <head>
-<title>mansoor0x · PS4 Exploit</title>
-<style>
-body {
-    background-color: #ffffff;
-    color: #111111;
-    font-size: 20px;
-    text-align: center;
-    margin: 0;
-    overflow: hidden;
-}
-.info {
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    font-size: 22px;
-    font-family: monospace;
-    color: #111111;
-    transform: translate(-50%, -50%);
-}
-</style>
+<title>PS Torghabeh · PS4 Exploit</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 <script>
 history.replaceState(null, null, 'index.html');
 var histlength = history.length;
 history.go(-histlength);
 
+function SetProgress(p, label, cls) {
+    var f = document.getElementById("progress-fill");
+    var t = document.getElementById("progress-pct");
+    var l = document.getElementById("progress-label");
+    if (f) { f.className = "progress-fill" + (cls ? " " + cls : ""); f.style.width = Math.max(0, Math.min(100, p)) + "%"; }
+    if (t) { t.innerHTML = p + "%"; }
+    if (l && label) { l.innerHTML = label; }
+}
+
 function DLProgress(e) {
     var pct = Math.round(e.loaded / e.total * 100);
-    msgs.innerHTML = "mansoor0x &middot; Installing ... " + pct + "%";
+    window.msgs.innerHTML = "Installing Offline Cache: " + pct + "%";
+    SetProgress(pct, "Installing offline cache...");
 }
 
 function DisplayCacheProgress() {
+    window.msgs.innerHTML = "Cache Installed Successfully &#10004;";
+    SetProgress(100, "Cache installation complete!", "success");
     setTimeout(function () {
-        msgs.innerHTML = "mansoor0x &middot; Cache OK";
-    }, 2000);
-    setTimeout(function () {
-        location.reload();
-    }, 3000);
+        window.msgs.innerHTML = "Now Close And Re-Open Your Browser ...";
+    }, 1500);
 }
 
-window.applicationCache.addEventListener("progress",    DLProgress,           false);
-window.applicationCache.oncached     = function (e) { DisplayCacheProgress(); };
+window.applicationCache.addEventListener("progress", DLProgress, false);
+window.applicationCache.oncached = function (e) { DisplayCacheProgress(); };
 window.applicationCache.onupdateready = function (e) { DisplayCacheProgress(); };
+window.applicationCache.onerror = function (e) {
+    window.msgs.innerHTML = "Error Installing Cache! - Clear and Re-Open Your Browser ...";
+    SetProgress(100, "Cache installation failed", "error");
+};
 </script>
-</head>
-<body>
-<div id="msgs" class="info"></div>
+<main class="card">
+    <img class="logo" src="logo.png" alt="GoldHEN">
+    <div class="eyebrow">PS Torghabeh</div>
+    <h1 class="title">PS4 WebKit Jailbreak</h1>
+    <div class="subtitle">FIRMWARE 13.02 &mdash; 13.52</div>
+    <div class="fw-badge">OFFLINE CACHE INSTALLER</div>
+    <div class="progress-wrap">
+        <div class="progress-info">
+            <span id="progress-label">Preparing cache installation...</span>
+            <span id="progress-pct">0%</span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+    <h1 id="msgs">Starting Cache Installation...</h1>
+</main>
 </body>
 </html>
